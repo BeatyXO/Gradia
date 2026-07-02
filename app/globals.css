@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --background: #f5ebfa;
+  --foreground: #2b1238;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Shantell Sans", "Comic Sans MS", "Segoe UI", system-ui, sans-serif;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+.panel {
+  border: 1px solid rgb(165 106 189 / 0.35);
+  border-radius: 8px;
+  background: rgb(231 219 239 / 0.82);
+}
+
+.field {
+  min-height: 2.75rem;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid rgb(165 106 189 / 0.45);
+  background: white;
+  padding: 0.75rem;
+  color: #2b1238;
+  outline: none;
+}
+
+.field:focus {
+  border-color: #6e3482;
+  box-shadow: 0 0 0 3px rgb(165 106 189 / 0.25);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #49225b;
+}
