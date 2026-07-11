@@ -7,6 +7,7 @@ const SUBMISSION_KEY = "gradia.submissions";
 const CONSENSUS_KEY = "gradia.consensus";
 
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+const memoryStore = new Map<string, string>();
 
 function storage() {
   if (typeof window === "undefined") return null;
@@ -37,7 +38,7 @@ function writeCookie<T>(key: string, value: T) {
 
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
-  const stored = storage()?.getItem(key) ?? readCookie(key);
+  const stored = storage()?.getItem(key) ?? readCookie(key) ?? memoryStore.get(key);
   if (!stored) return fallback;
   try {
     return JSON.parse(stored) as T;
@@ -51,6 +52,7 @@ const CHANGE_EVENT = "gradia:store-change";
 function write<T>(key: string, value: T) {
   if (typeof window !== "undefined") {
     const next = JSON.stringify(value);
+    memoryStore.set(key, next);
     const store = storage();
     if (store) {
       store.setItem(key, next);
