@@ -23,8 +23,8 @@ export function ContractPanel() {
   const [message, setMessage] = useState("Enter an assessment ID and submission ID that already exist on-chain, then request consensus.");
   const [assessmentId, setAssessmentId] = useState("");
   const [submissionId, setSubmissionId] = useState("");
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [assessments, setAssessments] = useState<Assessment[]>(() => getAssessments());
+  const [submissions, setSubmissions] = useState<Submission[]>(() => getSubmissions());
 
   useEffect(() => {
     function refresh() {

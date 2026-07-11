@@ -21,7 +21,7 @@ export function SubmissionForm() {
   const [savedId, setSavedId] = useState("");
   const [txHash, setTxHash] = useState("");
   const [message, setMessage] = useState("");
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [assessments, setAssessments] = useState<Assessment[]>(() => getAssessments());
 
   useEffect(() => {
     function refresh() {
