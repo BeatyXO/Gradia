@@ -41,6 +41,10 @@ export type ConsensusRecord = {
   submissionId: string;
   finalGrade: string;
   confidence: number;
+  evidenceVerified: boolean;
+  evidenceUrl: string;
+  evidenceHashMatched: boolean;
+  verificationNotes: string;
   rubricAlignment: string;
   learningOutcomeAchievement: string;
   evidenceQuality: string;

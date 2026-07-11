@@ -41,12 +41,21 @@ export default function ConsensusPage() {
                 <p className="mt-2 text-[#E7DBEF]">{consensus.confidence}% confidence</p>
               </div>
               <div className="grid gap-3">
+                <p className="rounded-md bg-white p-3"><strong>Evidence Verified:</strong> {consensus.evidenceVerified ? "Yes" : "No"}</p>
+                <p className="rounded-md bg-white p-3"><strong>Hash Matched:</strong> {consensus.evidenceHashMatched ? "Yes" : "Not confirmed"}</p>
                 <p className="rounded-md bg-white p-3"><strong>Rubric Alignment:</strong> {consensus.rubricAlignment}</p>
                 <p className="rounded-md bg-white p-3"><strong>Learning Outcome Achievement:</strong> {consensus.learningOutcomeAchievement}</p>
                 <p className="rounded-md bg-white p-3"><strong>Evidence Quality:</strong> {consensus.evidenceQuality}</p>
               </div>
             </div>
           </section>
+          {consensus.verificationNotes ? (
+            <section className="panel p-5">
+              <h2 className="text-xl font-black text-[#49225B]">Evidence Verification</h2>
+              <p className="mt-3 break-all text-sm font-semibold text-[#49225B]/75">{consensus.evidenceUrl}</p>
+              <p className="mt-3 text-sm leading-6 text-[#49225B]/75">{consensus.verificationNotes}</p>
+            </section>
+          ) : null}
           <section className="grid gap-4 md:grid-cols-2">
             <div className="panel p-5">
               <h2 className="text-xl font-black text-[#49225B]">Strength Areas</h2>

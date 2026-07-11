@@ -25,7 +25,8 @@ Built with Next.js, TypeScript, Tailwind CSS, injected wallet signing, and `genl
   against an existing assessment (`register_submission`).
 - **Contract Panel** (`/contract`) — request AI grading consensus
   (`request_assessment_consensus`) for an assessment/submission pair and wait for the
-  transaction receipt; the resulting grade is fetched and displayed automatically.
+  transaction receipt; the resulting evidence-checked grade is fetched and displayed
+  automatically.
 - **Consensus Viewer** (`/consensus`) — the latest finalized grade, confidence,
   strengths, improvements, and consensus history.
 - **Educator / Student dashboards** — role-specific views over the same records.
@@ -55,7 +56,7 @@ npm run dev
 Fill in `.env.local`:
 
 ```
-NEXT_PUBLIC_GRADIA_CONTRACT_ADDRESS=   # address of your deployed contract
+NEXT_PUBLIC_GRADIA_CONTRACT_ADDRESS=0x52Cb83125c915FaE34c45B57235b66A439C0A71C
 NEXT_PUBLIC_GENLAYER_NETWORK=studionet
 NEXT_PUBLIC_EXPLORER_BASE_URL=https://studio.genlayer.com
 ```
@@ -65,6 +66,9 @@ NEXT_PUBLIC_EXPLORER_BASE_URL=https://studio.genlayer.com
 Deploy `contracts/gradia_assessment.py` to GenLayer StudioNet (via GenLayer Studio or
 the GenLayer CLI/SDK), then set `NEXT_PUBLIC_GRADIA_CONTRACT_ADDRESS` to the resulting
 address and restart the dev server.
+
+Current StudioNet contract address:
+`0x52Cb83125c915FaE34c45B57235b66A439C0A71C`
 
 ### Wallet requirements
 
@@ -86,8 +90,10 @@ app degrades gracefully if the wallet doesn't support the Snaps API.
    homepage.
 
 Grading quality depends on the submission's evidence URL actually being reachable and
-containing real, substantive content — the contract is designed to refuse a fabricated
-grade when the evidence can't be verified.
+containing real, substantive content. Validators are instructed to use GenLayer web
+access to inspect the public evidence before accepting a grade; if the evidence cannot
+be fetched or does not support the claimed submission, the contract returns
+`UNVERIFIED` with `0` confidence instead of a fabricated grade.
 
 ## Verification
 

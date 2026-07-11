@@ -113,6 +113,7 @@ export default function HomePage() {
                 <div className="flex justify-between gap-4"><dt>Rubric Alignment</dt><dd className="font-black">{latestConsensus.rubricAlignment}</dd></div>
                 <div className="flex justify-between gap-4"><dt>Learning Outcome</dt><dd className="font-black">{latestConsensus.learningOutcomeAchievement}</dd></div>
                 <div className="flex justify-between gap-4"><dt>Evidence Quality</dt><dd className="font-black">{latestConsensus.evidenceQuality}</dd></div>
+                <div className="flex justify-between gap-4"><dt>Evidence Verified</dt><dd className="font-black">{latestConsensus.evidenceVerified ? "Yes" : "No"}</dd></div>
               </dl>
               <p className="mt-4 text-sm leading-6 text-[#49225B]/78">{latestConsensus.feedback}</p>
             </>
