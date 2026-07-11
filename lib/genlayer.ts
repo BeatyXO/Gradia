@@ -89,6 +89,17 @@ export async function requestConsensusOnChain(address: string, provider: Ethereu
   return String(txHash);
 }
 
+export async function readAssessmentOnChain(assessmentId: string) {
+  const client = createGradiaReadClient();
+  const raw = (await client.readContract({
+    address: contractAddress(),
+    functionName: "get_assessment",
+    args: [assessmentId],
+  })) as string;
+  if (!raw) return null;
+  return JSON.parse(raw) as Assessment;
+}
+
 export async function readConsensusRecord(assessmentId: string, submissionId: string) {
   const client = createGradiaReadClient();
   const raw = (await client.readContract({

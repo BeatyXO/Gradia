@@ -23,6 +23,11 @@ export default function ConsensusPage() {
       <div>
         <p className="text-sm font-black uppercase text-[#6E3482]">Steps 4-6</p>
         <h1 className="text-3xl font-black text-[#49225B]">Consensus Viewer</h1>
+        <p className="mt-2 text-sm text-[#49225B]/70">
+          Consensus results are decoded from the validator vote receipt at the moment they are requested.
+          The contract intentionally does not persist a re-queryable copy, since re-running consensus is
+          nondeterministic; this is the authoritative on-chain result for that request, cached locally for display.
+        </p>
       </div>
       {!consensus ? (
         <section className="panel p-5">

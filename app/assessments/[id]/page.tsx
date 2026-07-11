@@ -5,7 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getAssessment, getConsensusRecords, getSubmissions, subscribeToStoreChanges } from "@/lib/gradia-store";
+import { getAssessment as getLocalAssessment, getConsensusRecords, getSubmissions, subscribeToStoreChanges } from "@/lib/gradia-store";
+import { readAssessmentOnChain } from "@/lib/genlayer";
 import { explorerUrl } from "@/lib/utils";
 import type { Assessment, ConsensusRecord, Submission } from "@/lib/types";
 
@@ -19,13 +20,31 @@ export default function AssessmentDetailPage() {
 
   useEffect(() => {
     function refresh() {
-      setAssessment(getAssessment(id));
       setSubmissions(getSubmissions().filter((item) => item.assessmentId === id));
       setConsensus(getConsensusRecords().find((item) => item.assessmentId === id));
-      setLoaded(true);
     }
     refresh();
     return subscribeToStoreChanges(refresh);
+  }, [id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoaded(false);
+    readAssessmentOnChain(id)
+      .then((record) => {
+        if (cancelled) return;
+        // Fall back to the local copy (e.g. tx still pending/not yet mined) if the chain has nothing yet.
+        setAssessment(record ?? getLocalAssessment(id));
+      })
+      .catch(() => {
+        if (!cancelled) setAssessment(getLocalAssessment(id));
+      })
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   if (loaded && !assessment) {
