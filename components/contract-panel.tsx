@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Cable, FilePlus2, RefreshCw, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/status-pill";
-import { requestConsensusOnChain, readConsensusRecord, waitForAccepted } from "@/lib/genlayer";
+import { consensusRecordFromReceipt, requestConsensusOnChain, readConsensusRecord, waitForAccepted } from "@/lib/genlayer";
 import { getAssessments, getSubmissions, saveConsensusRecord, subscribeToStoreChanges } from "@/lib/gradia-store";
 import { describeError, explorerUrl } from "@/lib/utils";
 import type { Assessment, Submission, TransactionState } from "@/lib/types";
@@ -67,9 +67,12 @@ export function ContractPanel() {
     try {
       if (!txHash) return;
       setState("pending");
-      await waitForAccepted(txHash);
+      const receipt = await waitForAccepted(txHash);
 
-      const record = await readConsensusRecord(assessmentId, submissionId);
+      let record = consensusRecordFromReceipt(receipt, assessmentId, submissionId);
+      if (!record) {
+        record = await readConsensusRecord(assessmentId, submissionId);
+      }
       if (record) {
         saveConsensusRecord({ ...record, assessmentId, submissionId });
       }

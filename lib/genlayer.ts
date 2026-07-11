@@ -100,10 +100,51 @@ export async function readConsensusRecord(assessmentId: string, submissionId: st
   return JSON.parse(raw) as ConsensusRecord;
 }
 
+type ConsensusReceipt = {
+  consensus_data?: {
+    validators?: Array<{
+      vote?: string;
+      result?: string;
+    }>;
+  };
+};
+
+function decodeBase64(value: string) {
+  if (typeof window !== "undefined" && typeof window.atob === "function") {
+    return Uint8Array.from(window.atob(value), (char) => char.charCodeAt(0));
+  }
+  return Uint8Array.from(Buffer.from(value, "base64"));
+}
+
+function tryDecodeConsensusResult(value: string) {
+  try {
+    const raw = decodeBase64(value);
+    if (raw[0] !== 0) return null;
+    const text = new TextDecoder("utf-8").decode(raw.slice(1));
+    const jsonStart = text.indexOf("{");
+    const jsonEnd = text.lastIndexOf("}");
+    if (jsonStart === -1 || jsonEnd === -1 || jsonEnd <= jsonStart) return null;
+    return JSON.parse(text.slice(jsonStart, jsonEnd + 1)) as Omit<ConsensusRecord, "assessmentId" | "submissionId">;
+  } catch {
+    return null;
+  }
+}
+
+export function consensusRecordFromReceipt(receipt: unknown, assessmentId: string, submissionId: string) {
+  const validators = (receipt as ConsensusReceipt).consensus_data?.validators ?? [];
+  for (const validator of validators) {
+    if (validator.vote !== "agree" || !validator.result) continue;
+    const record = tryDecodeConsensusResult(validator.result);
+    if (record) return { ...record, assessmentId, submissionId } satisfies ConsensusRecord;
+  }
+  return null;
+}
+
 export async function waitForAccepted(txHash: string) {
   const client = createGradiaReadClient();
   return client.waitForTransactionReceipt({
     hash: txHash as Hash,
     status: TransactionStatus.ACCEPTED,
-  });
+    fullTransaction: true,
+  } as Parameters<typeof client.waitForTransactionReceipt>[0] & { fullTransaction: boolean });
 }
