@@ -54,9 +54,8 @@ function write<T>(key: string, value: T) {
     const store = storage();
     if (store) {
       store.setItem(key, next);
-    } else {
-      writeCookie(key, value);
     }
+    writeCookie(key, value);
     window.dispatchEvent(new Event(CHANGE_EVENT));
   }
 }
