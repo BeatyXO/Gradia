@@ -306,9 +306,8 @@ class GradiaAssessment(gl.Contract):
 
     @gl.public.view
     def get_consensus_record(self, assessment_id: str, submission_id: str) -> str:
-        assessment = self._require_assessment_exists(assessment_id)
+        self._require_assessment_exists(assessment_id)
         submission = self._require_submission_exists(submission_id)
         if submission.get("assessmentId", "") != assessment_id:
             raise gl.vm.UserError("Submission does not belong to assessment")
-        result = self._run_consensus_grading(assessment, submission)
-        return self._json(result)
+        return ""
