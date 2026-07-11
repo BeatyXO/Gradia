@@ -56,7 +56,7 @@ npm run dev
 Fill in `.env.local`:
 
 ```
-NEXT_PUBLIC_GRADIA_CONTRACT_ADDRESS=0x52Cb83125c915FaE34c45B57235b66A439C0A71C
+NEXT_PUBLIC_GRADIA_CONTRACT_ADDRESS=0xeBE1fD3c69602BAd96DCFaf4CBeCeA3e70D8F0A0
 NEXT_PUBLIC_GENLAYER_NETWORK=studionet
 NEXT_PUBLIC_EXPLORER_BASE_URL=https://studio.genlayer.com
 ```
@@ -68,7 +68,7 @@ the GenLayer CLI/SDK), then set `NEXT_PUBLIC_GRADIA_CONTRACT_ADDRESS` to the res
 address and restart the dev server.
 
 Current StudioNet contract address:
-`0x52Cb83125c915FaE34c45B57235b66A439C0A71C`
+`0xeBE1fD3c69602BAd96DCFaf4CBeCeA3e70D8F0A0`
 
 ### Wallet requirements
 
