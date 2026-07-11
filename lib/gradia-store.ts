@@ -6,9 +6,38 @@ const ASSESSMENT_KEY = "gradia.assessments";
 const SUBMISSION_KEY = "gradia.submissions";
 const CONSENSUS_KEY = "gradia.consensus";
 
+const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+
+function storage() {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = window.localStorage;
+    const probeKey = "gradia.storage.probe";
+    value.setItem(probeKey, "1");
+    value.removeItem(probeKey);
+    return value;
+  } catch {
+    return null;
+  }
+}
+
+function readCookie(key: string) {
+  if (typeof document === "undefined") return null;
+  const encodedKey = encodeURIComponent(key) + "=";
+  const item = document.cookie.split("; ").find((part) => part.startsWith(encodedKey));
+  if (!item) return null;
+  return decodeURIComponent(item.slice(encodedKey.length));
+}
+
+function writeCookie<T>(key: string, value: T) {
+  if (typeof document === "undefined") return;
+  const encodedValue = encodeURIComponent(JSON.stringify(value));
+  document.cookie = `${encodeURIComponent(key)}=${encodedValue}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
+
 function read<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
-  const stored = window.localStorage.getItem(key);
+  const stored = storage()?.getItem(key) ?? readCookie(key);
   if (!stored) return fallback;
   try {
     return JSON.parse(stored) as T;
@@ -21,7 +50,13 @@ const CHANGE_EVENT = "gradia:store-change";
 
 function write<T>(key: string, value: T) {
   if (typeof window !== "undefined") {
-    window.localStorage.setItem(key, JSON.stringify(value));
+    const next = JSON.stringify(value);
+    const store = storage();
+    if (store) {
+      store.setItem(key, next);
+    } else {
+      writeCookie(key, value);
+    }
     window.dispatchEvent(new Event(CHANGE_EVENT));
   }
 }
