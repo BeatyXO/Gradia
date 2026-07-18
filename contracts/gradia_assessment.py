@@ -26,11 +26,13 @@ class GradiaAssessment(gl.Contract):
     assessments: TreeMap[str, str]
     submissions: TreeMap[str, str]
     assessment_submission_index: TreeMap[str, str]
+    consensus_records: TreeMap[str, str]
 
     def __init__(self) -> None:
         self.assessments = TreeMap()
         self.submissions = TreeMap()
         self.assessment_submission_index = TreeMap()
+        self.consensus_records = TreeMap()
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -79,6 +81,9 @@ class GradiaAssessment(gl.Contract):
 
     def _key2(self, a: str, b: str) -> str:
         return a + "::" + b
+
+    def _consensus_key(self, assessment_id: str, submission_id: str) -> str:
+        return self._key2(assessment_id, submission_id)
 
     def _append_unique(self, existing: str, item: str) -> str:
         if existing is None or existing == "":
@@ -193,7 +198,9 @@ class GradiaAssessment(gl.Contract):
             ),
         )
 
-        return self._normalise_consensus_result(consensus_json)
+        result = self._normalise_consensus_result(consensus_json)
+        result["evidenceUrl"] = evidence_url
+        return result
 
     # ------------------------------------------------------------------
     # Assessment registry
@@ -301,6 +308,13 @@ class GradiaAssessment(gl.Contract):
         )
 
         result = self._run_consensus_grading(assessment, submission)
+        result["assessmentId"] = assessment_id
+        result["submissionId"] = submission_id
+
+        self.consensus_records[self._consensus_key(assessment_id, submission_id)] = self._json(result)
+
+        assessment["status"] = "finalized"
+        self.assessments[assessment_id] = self._json(assessment)
 
         return self._json(result)
 
@@ -310,4 +324,4 @@ class GradiaAssessment(gl.Contract):
         submission = self._require_submission_exists(submission_id)
         if submission.get("assessmentId", "") != assessment_id:
             raise gl.vm.UserError("Submission does not belong to assessment")
-        return ""
+        return self.consensus_records.get(self._consensus_key(assessment_id, submission_id), "")
